@@ -215,7 +215,7 @@ flatMap f list = flatten (map(f)(list))
 flattenAgain ::
   List (List a)
   -> List a
-flattenAgain listOfList = flatMap(id)(list)
+flattenAgain listOfList = flatMap(id)(listOfList)
 
 -- | Convert a list of optional values to an optional list of values.
 --
@@ -242,8 +242,7 @@ flattenAgain listOfList = flatMap(id)(list)
 seqOptional ::
   List (Optional a)
   -> Optional (List a)
-seqOptional =
-  error "todo: Course.List#seqOptional"
+seqOptional list = foldRight (twiceOptional (:.)) (Full Nil) list
 
 -- | Find the first element in the list matching the predicate.
 --
@@ -265,8 +264,7 @@ find ::
   (a -> Bool)
   -> List a
   -> Optional a
-find =
-  error "todo: Course.List#find"
+find f list = headOr Empty (map (\x -> Full(x)) (filter f list))
 
 -- | Determine if the length of the given list is greater than 4.
 --
@@ -284,8 +282,9 @@ find =
 lengthGT4 ::
   List a
   -> Bool
-lengthGT4 =
-  error "todo: Course.List#lengthGT4"
+lengthGT4 (_ :. _ :. _ :. _ :. _ :. _)  = True
+lengthGT4 _                             = False
+
 
 -- | Reverse a list.
 --
@@ -301,8 +300,7 @@ lengthGT4 =
 reverse ::
   List a
   -> List a
-reverse =
-  error "todo: Course.List#reverse"
+reverse = foldLeft(\ b a -> a :. b)(Nil)
 
 -- | Produce an infinite `List` that seeds with the given value at its head,
 -- then runs the given function for subsequent elements
@@ -331,7 +329,7 @@ notReverse ::
   List a
   -> List a
 notReverse =
-  error "todo: Is it even possible?"
+  error "todo: Is it even possible?" -- Impossible Empty list will be always Empty
 
 ---- End of list exercises
 
