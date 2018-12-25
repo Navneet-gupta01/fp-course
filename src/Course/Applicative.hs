@@ -124,14 +124,14 @@ instance Applicative ((->) t) where
   pure ::
     a
     -> ((->) t a)
-  pure = (->) t
+  pure a = (\_ -> a)
 
   (<*>) ::
     ((->) t (a -> b))
     -> ((->) t a)
     -> ((->) t b)
-  (<*>) =
-    error "todo: Course.Apply (<*>)#instance ((->) t)"
+  (<*>) f1 f = (\x -> x `f1` (f x))
+
 
 
 -- | Apply a binary function in the environment.
@@ -159,8 +159,8 @@ lift2 ::
   -> f a
   -> f b
   -> f c
-lift2 =
-  error "todo: Course.Applicative#lift2"
+lift2 f a b =  (f <$> a) <*> b
+
 
 -- | Apply a ternary function in the environment.
 -- /can be written using `lift2` and `(<*>)`./
@@ -192,8 +192,7 @@ lift3 ::
   -> f b
   -> f c
   -> f d
-lift3 =
-  error "todo: Course.Applicative#lift3"
+lift3 f a b c = (lift2 f a b) <*> c
 
 -- | Apply a quaternary function in the environment.
 -- /can be written using `lift3` and `(<*>)`./
@@ -226,16 +225,14 @@ lift4 ::
   -> f c
   -> f d
   -> f e
-lift4 =
-  error "todo: Course.Applicative#lift4"
+lift4 f a b c d = (lift3 f a b c) <*> d
 
 -- | Apply a nullary function in the environment.
 lift0 ::
   Applicative f =>
   a
   -> f a
-lift0 =
-  error "todo: Course.Applicative#lift0"
+lift0 f = pure f
 
 -- | Apply a unary function in the environment.
 -- /can be written using `lift0` and `(<*>)`./
@@ -253,8 +250,7 @@ lift1 ::
   (a -> b)
   -> f a
   -> f b
-lift1 =
-  error "todo: Course.Applicative#lift1"
+lift1 f a = ( pure f ) <*> a
 
 -- | Apply, discarding the value of the first argument.
 -- Pronounced, right apply.
@@ -279,8 +275,10 @@ lift1 =
   f a
   -> f b
   -> f b
-(*>) =
-  error "todo: Course.Applicative#(*>)"
+(*>) f1 f2 = lift2 (const id) f1 f2
+-- :t const => a -> b -> a     left Associative
+-- :t id => a -> a
+-- :t (const id)  => b -> a -> a  right Assocaitive
 
 -- | Apply, discarding the value of the second argument.
 -- Pronounced, left apply.
@@ -305,8 +303,8 @@ lift1 =
   f b
   -> f a
   -> f b
-(<*) =
-  error "todo: Course.Applicative#(<*)"
+(<*) = lift2 (const)
+  -- error "todo: Course.Applicative#(<*)"
 
 -- | Sequences a list of structures to a structure of list.
 --
@@ -328,8 +326,7 @@ sequence ::
   Applicative f =>
   List (f a)
   -> f (List a)
-sequence =
-  error "todo: Course.Applicative#sequence"
+sequence fa = foldRight (lift2 (:.)) (pure Nil) fa
 
 -- | Replicate an effect a given number of times.
 --
@@ -354,8 +351,8 @@ replicateA ::
   Int
   -> f a
   -> f (List a)
-replicateA =
-  error "todo: Course.Applicative#replicateA"
+replicateA n fa = sequence (replicate n fa)
+
 
 -- | Filter a list with a predicate that produces an effect.
 --
@@ -382,9 +379,8 @@ filtering ::
   (a -> f Bool)
   -> List a
   -> f (List a)
-filtering =
-  error "todo: Course.Applicative#filtering"
-
+filtering = --lift1 f la
+  error "todo: Course.Applicative#(<*)"
 -----------------------
 -- SUPPORT LIBRARIES --
 -----------------------
