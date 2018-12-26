@@ -160,7 +160,7 @@ infixl 1 >>=
   -> (a -> f b)
   -> a
   -> f c
-(<=<) f1 f2 a1 = (=<<) f1 (f2 a1)
+(<=<) f1 f2 a1 = f1 =<< (f2 a1)
   -- error "todo: Course.Monad#(<=<)"
 
 infixr 1 <=<
