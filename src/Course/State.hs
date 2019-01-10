@@ -122,7 +122,7 @@ instance Monad (State s) where
     -> State s b
   f =<< State a =
     State(\s -> let (g, t) = a s
-                    in runState (f g) t)
+                      in runState (f g) t)
 
 -- | Find the first element in a `List` that satisfies a given predicate.
 -- It is possible that no element is found, hence an `Optional` result.
@@ -143,8 +143,10 @@ findM ::
   (a -> f Bool)
   -> List a
   -> f (Optional a)
-findM =
-  error "todo: Course.State#findM"
+findM _ Nil = pure Empty
+findM p (h :. t) = (\q -> if q then pure (Full h) else findM p t) =<< p h  -- Answer
+  -- error "todo: Course.State#findM"
+  -- find f list = headOr Empty (map (\x -> Full(x)) (filter f list))
 
 -- | Find the first element in a `List` that repeats.
 -- It is possible that no element repeats, hence an `Optional` result.
